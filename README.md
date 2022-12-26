@@ -21,4 +21,6 @@ Based on the inferred GRNs and further their activity matrices, NME showed bette
 In summary, based on continuous causality, NME provides a powerful tool in inferring causal regulations of GRNs between genes from scRNA-seq data, 
 which is further exploited to identify novel cell types/states and predict cell type-specific network modules. <br /> 
 ![image](https://user-images.githubusercontent.com/63344240/209491331-f360e1a5-786e-48c6-b5ce-39e958373e95.png)
+## NME analysis Guide
+NME is designed based on matlab.
 
