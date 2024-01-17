@@ -24,7 +24,7 @@ which is further exploited to identify novel cell types/states and predict cell 
 ## NME analysis Guide
 NME is designed based on matlab.
 ## run NME
-
+%%linux
 ```bash
 cd /path/to/NME/Code
 filename=../Data/NME_input_data.csv
@@ -35,6 +35,7 @@ k=5
 matlab -nodesktop -nosplash -r "filename='$filename',p=$p,k=$k;calc_NME;quit"
 ```
 ## run NME (step by step)
+% matlab
 ```matlab
 input_data = importdata(filename);
 x = input_data(:,1);
@@ -60,6 +61,7 @@ k=5
 matlab -nodesktop -nosplash -r "filename='$filename',nz=$nz,p=$p,k=$k,output='$output';calc_cNME;quit"
 ```
 ## run NME (step by step)
+%matlab
 ```matlab
 filename=../Data/cNME_input_data.tsv
 output='../Output/example_cNME_output'
@@ -97,9 +99,11 @@ matlab -nodesktop -nosplash -r "filename='$filename',species='$species',nz=$nz,p
 ## run scNME (step by step)
 scRNA-seq from Seurat objects,e.g.pbmc3k which can be download from https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz
 ```bash
+%linux 
 tar zxvf pbmc3k_filtered_gene_bc_matrices.tar.gz
 cd filtered_gene_bc_matrices/
 ```
+%R
 ```R
 library(dplyr)
 library(Seurat)
@@ -121,6 +125,7 @@ data <- GetAssayData(Basal_WT,slot = 'data')
 data_f <- data[rownames(data)%in%genes,]
 write.csv(data_f,'data_f.csv')
 ```
+%matlab
 ```matlab
 GEM = importdata('data_f.csv');
 cellnames = GEM.textdata(1,2:end);
@@ -142,4 +147,5 @@ writetable(sc_entropy,'scNME_matrix.csv','WriteRowNames',true);
 net_sig = array2table(bnet,'RowNames',gene_names(pos),'VariableNames',gene_names);
 writetable(net_sig,'binary_net.csv','WriteRowNames',true);
 ```
+%R
 
