@@ -5,6 +5,7 @@ function [out,bnet,regulators] = Get_entropy(GEM,net,regulators,gene_names,p_val
 % p_value
  [m,~] = size(net);
  [~,pos] = ismember(regulators,gene_names);
+ pos(pos==0)=[];
  for i = 1:m
  cnet = net(i,:);
  cmean = mean(cnet);
