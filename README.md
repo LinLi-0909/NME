@@ -148,4 +148,17 @@ net_sig = array2table(bnet,'RowNames',gene_names(pos),'VariableNames',gene_names
 writetable(net_sig,'binary_net.csv','WriteRowNames',true);
 ```
 %R
-
+```R
+entropy_count <- read.csv('scNME_matrix.csv',header=T,row.names=1)
+colnames(entropy_count)<- colnames(pbmc)
+gene = rownames(entropy_count)
+x = apply(entropy_count,1,function(x){sum(x!=0)})
+gene = paste(gene,'(',x,'g)',sep = '')
+rownames(entropy_count)<- gene
+entropy_S <- CreateSeuratObject(counts =entropy_count,min.cells = 3,min.features = 1)
+entropy_S
+entropy_S@assays$RNA@data<- entropy_S@assays$RNA@counts
+entropy_S$cluster <- pbmc$seurat_clusters
+Idents(entropy_S)<- entropy_S$cluster
+diff_GRN <- FindAllMarkers(entropy_S,logfc.threshold = 0.25,only.pos = T)
+```
