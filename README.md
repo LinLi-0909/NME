@@ -34,9 +34,19 @@ p=15
 k=5
 matlab -nodesktop -nosplash -r "filename='$filename',p=$p,k=$k;calc_NME;quit"
 ```
-
+## run NME (step by step)
+```matlab
+input_data = importdata(filename);
+x = input_data(:,1);
+y = input_data(:,2);
+p=15;
+k=5;
+out_x2y = DMI(x,y,p,k);
+out_y2x = DMI(y,x,p,k);
+disp(['The normalized causality from V1 to V2 is:',num2str(out_x2y)]);
+disp(['The normalized causality from V2 to V1 is:',num2str(out_y2x)]);
+```
 ## run cNME
-
 ```bash
 filename=../Data/cNME_input_data.tsv
 # save cNME output to
@@ -49,7 +59,23 @@ p=5
 k=5
 matlab -nodesktop -nosplash -r "filename='$filename',nz=$nz,p=$p,k=$k,output='$output';calc_cNME;quit"
 ```
-
+## run NME (step by step)
+```matlab
+filename=../Data/cNME_input_data.tsv
+output='../Output/example_cNME_output'
+# the nubmer of conditional variables
+nz=1
+# the number of mapping neighbors
+p=5
+# the number of estimating neighbors
+k=5
+input_data = importdata(filename);
+var_names = strip(input_data.textdata,'"');
+input_data = input_data.data;
+out_mat = Get_cDMI(input_data,var_names,var_names,nz,p,k);
+out = array2table(out_mat,'VariableNames',var_names,'RowNames',var_names);
+writetable(out,[output,'.csv'],'WriteRowNames',true);
+```
 ## run scNME
 
 ```bash
@@ -68,6 +94,52 @@ p_cutoff=0.05
 output='../Output/example_scNME_output'
 matlab -nodesktop -nosplash -r "filename='$filename',species='$species',nz=$nz,p=$p,k=$k,p_cutoff=$p_cutoff,output='$output',nworkers=$nworkers;calc_scNME;quit"
 ```
-
-
+## run scNME (step by step)
+scRNA-seq from Seurat objects,e.g.pbmc3k which can be download from https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz
+```bash
+tar zxvf pbmc3k_filtered_gene_bc_matrices.tar.gz
+cd filtered_gene_bc_matrices/
+```
+```R
+library(dplyr)
+library(Seurat)
+library(patchwork)
+# Load the PBMC dataset
+pbmc.data <- Read10X(data.dir = "hg19/")
+# Initialize the Seurat object with the raw (non-normalized data).
+pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
+pbmc
+# The [[ operator can add columns to object metadata. This is a great place to stash QC stats
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+##Selected variable genes to construct scNME
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 5000)
+variable_genes <- VariableFeatures(pbmc)
+tf <- read.csv('human_tf_trrust.txt',header=F)##can be download from https://github.com/LinLi-0909/NME/tree/main/data
+genes <- unique(c(variable_genes,tf$V1))
+data <- GetAssayData(Basal_WT,slot = 'data')
+data_f <- data[rownames(data)%in%genes,]
+write.csv(data_f,'data_f.csv')
+```
+```matlab
+GEM = importdata('data_f.csv');
+cellnames = GEM.textdata(1,2:end);
+gene_names = GEM.textdata(2:end,1);
+regulators = importdata('human_tf_trrust.txt');
+[~,pos] = ismember(regulators,gene_names);
+pos(pos==0)=[];
+GEM = GEM.data;
+GEM = GEM';
+nz=1;
+p=12;
+l=5;
+Net = Get_cDMI(GEM,regulators,gene_names,nz,p,l);%% causal network
+%% compute the tf-GRN activity of cells(entropy),and binary causal network (bnet)
+p_value=0.1 % 0.05,0.01
+[entropy,bnet,regulators] = Get_entropy(GEM,net,regulators,gene_names,p_value)
+scNME_matrix  = array2table(entropy','RowNames',gene_names(pos),'VariableNames',cellnames);
+writetable(sc_entropy,'scNME_matrix.csv','WriteRowNames',true);
+net_sig = array2table(bnet,'RowNames',gene_names(pos),'VariableNames',gene_names);
+writetable(net_sig,'binary_net.csv','WriteRowNames',true);
+```
 
