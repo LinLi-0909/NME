@@ -24,8 +24,9 @@ which is further exploited to identify novel cell types/states and predict cell 
 ## NME analysis Guide
 NME is designed based on matlab.
 ## run NME
-%linux
+
 ```bash
+%linux
 cd /path/to/NME/Code
 filename=../Data/NME_input_data.csv
 # the number of mapping neighbors
