@@ -98,8 +98,8 @@ matlab -nodesktop -nosplash -r "filename='$filename',species='$species',nz=$nz,p
 ```
 ## run scNME (step by step)
 scRNA-seq from Seurat objects,e.g.pbmc3k which can be download from https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz
-```bash
 %linux 
+```bash
 tar zxvf pbmc3k_filtered_gene_bc_matrices.tar.gz
 cd filtered_gene_bc_matrices/
 ```
