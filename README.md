@@ -162,4 +162,11 @@ entropy_S@assays$RNA@data<- entropy_S@assays$RNA@counts
 entropy_S$cluster <- pbmc$seurat_clusters
 Idents(entropy_S)<- entropy_S$cluster
 diff_GRN <- FindAllMarkers(entropy_S,logfc.threshold = 0.25,only.pos = T)
+diff_GRN %>%
+  group_by(cluster) %>%
+  slice_head(n = 10) %>%
+  ungroup() -> top10
+DotPlot(entropy_S, features = top10$gene,group.by = 'cluster',dot.scale = 10,dot.min=0)+RotatedAxis()+
+  scale_x_discrete("")+scale_y_discrete()+scale_color_gradientn(colours = rev(c("chocolate","white","slateblue")))+
+  scale_size_continuous(range=c(5, 11))+theme(panel.grid = element_line(color="lightgrey"))
 ```
