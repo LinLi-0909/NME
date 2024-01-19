@@ -142,9 +142,9 @@ l=5;
 Net = Get_cDMI(GEM,regulators,gene_names,nz,p,l);%% causal network
 %% compute the tf-GRN activity of cells(entropy),and binary causal network (bnet)
 p_value=0.1 % 0.05,0.01
-[entropy,bnet,regulators] = Get_entropy(GEM,net,regulators,gene_names,p_value)
+[entropy,bnet,regulators] = Get_entropy(GEM,Net,regulators,gene_names,p_value)
 scNME_matrix  = array2table(entropy','RowNames',gene_names(pos),'VariableNames',cellnames);
-writetable(sc_entropy,'scNME_matrix.csv','WriteRowNames',true);
+writetable(scNME_matrix,'scNME_matrix.csv','WriteRowNames',true);
 net_sig = array2table(bnet,'RowNames',gene_names(pos),'VariableNames',gene_names);
 writetable(net_sig,'binary_net.csv','WriteRowNames',true);
 ```
