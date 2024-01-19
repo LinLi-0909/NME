@@ -148,6 +148,77 @@ writetable(scNME_matrix,'scNME_matrix.csv','WriteRowNames',true);
 net_sig = array2table(bnet,'RowNames',gene_names(pos),'VariableNames',gene_names);
 writetable(net_sig,'binary_net.csv','WriteRowNames',true);
 ```
+%matalab (for large datasets)
+here, we calculate the causal network of genes, respectively. For example, there are 6,000 genes in GEM. 
+We can divide the genes into 10 sets, e.g. 1:600, 601:1200,...,5401:6000.
+And for each gene set, we can calculate the causal network.
+```matlab
+%e.g. for 1:600 genes
+GEM = importdata('data_f.csv');
+cellnames = GEM.textdata(1,2:end);
+gene_names = GEM.textdata(2:end,1);
+regulators = importdata('human_tf_trrust.txt');
+[~,pos] = ismember(regulators,gene_names);
+pos(pos==0)=[];
+GEM = GEM.data;
+GEM = GEM';
+nz=1;
+p=12;
+l=5;
+timeseries=0;
+ns=1;%the gene index
+ne=600;%the gene idex 
+net1 = Get_cDMI_par(GEM,regulators,gene_names,nz,p,l,timeseries,ns,ne)%% causal network for tfs and 1:600 genes
+save('net1.mat','net1')
+%e.g. for 601:1200 genes
+GEM = importdata('data_f.csv');
+cellnames = GEM.textdata(1,2:end);
+gene_names = GEM.textdata(2:end,1);
+regulators = importdata('human_tf_trrust.txt');
+[~,pos] = ismember(regulators,gene_names);
+pos(pos==0)=[];
+GEM = GEM.data;
+GEM = GEM';
+nz=1;
+p=12;
+l=5;
+timeseries=0;
+ns=601;%the gene index
+ne=1200;%the gene idex 
+net2 = Get_cDMI_par(GEM,regulators,gene_names,nz,p,l,timeseries,ns,ne)%% causal network for tfs and 601:1200 genes
+save('net2.mat','net2')
+......
+%for 5401:6000
+GEM = importdata('data_f.csv');
+cellnames = GEM.textdata(1,2:end);
+gene_names = GEM.textdata(2:end,1);
+regulators = importdata('human_tf_trrust.txt');
+[~,pos] = ismember(regulators,gene_names);
+pos(pos==0)=[];
+GEM = GEM.data;
+GEM = GEM';
+nz=1;
+p=12;
+l=5;
+timeseries=0;
+ns=5401;%the gene index
+ne=6000;%the gene idex 
+net10 = Get_cDMI_par(GEM,regulators,gene_names,nz,p,l,timeseries,ns,ne)%% causal network for tfs and 5401:6000 genes
+save('net10.mat','net10')
+load('net1.mat);load('net2.mat);load('net3.mat);load('net4.mat);load('net5.mat);
+load('net6.mat);load('net7.mat);load('net8.mat);load('net9.mat);load('net10.mat);
+Net=[net1,net2,net3,net4,net5,net6,net7,net8,net9,net10];
+%% compute the tf-GRN activity of cells(entropy),and binary causal network (bnet)
+p_value=0.1 % 0.05,0.01
+[entropy,bnet,regulators] = Get_entropy(GEM,Net,regulators,gene_names,p_value)
+scNME_matrix  = array2table(entropy','RowNames',gene_names(pos),'VariableNames',cellnames);
+writetable(scNME_matrix,'scNME_matrix.csv','WriteRowNames',true);
+net_sig = array2table(bnet,'RowNames',gene_names(pos),'VariableNames',gene_names);
+writetable(net_sig,'binary_net.csv','WriteRowNames',true);
+```
+
+
+
 %R
 ```R
 entropy_count <- read.csv('scNME_matrix.csv',header=T,row.names=1)
