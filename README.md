@@ -127,7 +127,7 @@ pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 5000)
 variable_genes <- VariableFeatures(pbmc)
 tf <- read.csv('human_tf_trrust.txt',header=F)##can be download from https://github.com/LinLi-0909/NME/tree/main/data
 genes <- unique(c(variable_genes,tf$V1))
-data <- GetAssayData(Basal_WT,slot = 'data')
+data <- GetAssayData(pbmc,slot = 'data')
 data_f <- data[rownames(data)%in%genes,]
 write.csv(data_f,'data_f.csv')
 ```
