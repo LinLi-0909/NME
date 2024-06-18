@@ -2,8 +2,8 @@
 Single-cell causal network inference based on neighbor cross-mapping entropy
 
 **2024/04/24 Update!!!**
-
-If you are familar with Shell and Python, and want to run this algorithm on the server, please check the `pyNME` folder.
+The Python version significantly improved the computation speed.
+If you are familar with Shell and Python, and want to run this algorithm on the server, please check the `pyNME` folder .
 
 
 ## Overview
